@@ -19,16 +19,18 @@
         console.log('Setting submit handler for form');
         this.$formElement.on('submit', function(event) {
             event.preventDefault();
+
             var data = {};
             $(this).serializeArray().forEach(function(item) {
                 data[item.name] = item.value;
                 console.log(item.name + ' is ' + item.value);
             });
-            data.id = data.emailAddress;
             console.log(data);
-            fn(data);
-            this.reset();
-            this.elements[0].focus();
+            fn(data)
+                .then(function() {
+                    this.reset();
+                    this.elements[0].focus();
+                }.bind(this));
         });
     };
 
@@ -40,7 +42,7 @@
             if (fn(emailAddress)) {
                 event.target.setCustomValidity('');
             } else {
-                message = emailAddress + ' is not an authorized email address! or been used before';
+                message = emailAddress + ' is not an authorized email address!';
                 event.target.setCustomValidity(message);
             }
         });

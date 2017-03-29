@@ -7,17 +7,8 @@
             return /.+@bignerdranch\.com$/.test(email);
         },
         isEmailBeenUsed: function(email) {
-            $.ajax({
-                url: myTruck.db.serverUrl + '/' + email,
-                type: 'get',
-                async: true,
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('status:' + XMLHttpRequest.status + ', status text: ' + XMLHttpRequest.statusText);
-                    return true;
-                },
-                success: function(data) {
-                  return !data;
-                }
+            $.get(myTruck.db.serverUrl + '/' + email, function(serverResponse) {
+                return serverResponse.emailAddress === email;
             });
         }
     };
