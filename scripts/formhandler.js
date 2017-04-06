@@ -16,16 +16,13 @@
     }
 
     FormHandler.prototype.addSubmitHandler = function(fn) {
-        console.log('Setting submit handler for form');
         this.$formElement.on('submit', function(event) {
             event.preventDefault();
-
             var data = {};
             $(this).serializeArray().forEach(function(item) {
                 data[item.name] = item.value;
-                console.log(item.name + ' is ' + item.value);
             });
-            console.log(data);
+            data.id = data.emailAddress;
             fn(data)
                 .then(function() {
                     this.reset();
@@ -35,14 +32,18 @@
     };
 
     FormHandler.prototype.addInputHandler = function(fn) {
-        console.log('Setting input handler for form');
         this.$formElement.on('change', '[name="emailAddress"]', function(event) {
             var emailAddress = event.target.value;
             var message = '';
-            if (fn(emailAddress)) {
+            var isEmailValid = fn(emailAddress);
+            console.log(isEmailValid);
+            if (isEmailValid === 'NO_ERROR') {
                 event.target.setCustomValidity('');
-            } else {
+            } else if (isEmailValid === 'REGEX_ERROR') {
                 message = emailAddress + ' is not an authorized email address!';
+                event.target.setCustomValidity(message);
+            } else if (isEmailValid === 'EMAIL_DUPLICATE') {
+                message = emailAddress + ' is been used before!';
                 event.target.setCustomValidity(message);
             }
         });
